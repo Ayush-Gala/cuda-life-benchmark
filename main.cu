@@ -1,3 +1,7 @@
+extern "C" {
+    #include "sdl_grid.h"
+}
+
 int main() {
 	SDL_Window *window;
 	SDL_Renderer *renderer;
