@@ -29,3 +29,23 @@ note to self:
     → when threads in same warp take diff paths, they get serialized = bad
     so... avoid branching inside warps unless really needed
     
+
+major bottleneck rn: initial HtoD mem transfer — slow bc using pageable mem
+    → would be faster with pinned mem (duh)
+    BUT the file that does the alloc is a .c file?? so I can't use cudaMallocHost()
+    → annoying.
+    → only fix I see: convert it to .cu, but that feels like overkill for one line
+    
+    
+note for future me: why am I even avoiding .cu files??
+    → mostly to keep CUDA parts isolated — makes it easier to read & find where kernels live
+    → only want .cu files where actual GPU code happens
+    ...might need to break that rule just this once so I can pin mem earlier
+        
+also hit stack overflow trying to test with huge data — probably just allocating too much when pinning. watch out for that.
+    
+TODO:
+    figure out why mem copy fails if I launch kernel with too many blocks
+    → ex: (1024, 1024) config + small grid (like 40x40) = it breaks
+    → maybe it's overwriting something? maybe out of bounds?
+    need to recreate & dig deeper
