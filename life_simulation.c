@@ -7,7 +7,7 @@
 // Constants for grid dimensions
 #define GRID_H 1000
 #define GRID_W 1000
-#define NUM_ITERATIONS 1500
+#define NUM_ITERATIONS 557
 
 static int evaluate_cell(int i, int j, int* grid);
 void print_grid(int* grid);
@@ -19,7 +19,6 @@ void run_simulation(int* grid) {
     bool grid_change = true;
     clock_t start_time, end_time;
     double total_time = 0.0;
-    double iter_time;
     
     updated_grid = (int*)malloc(sizeof(int) * GRID_H * GRID_W);
 

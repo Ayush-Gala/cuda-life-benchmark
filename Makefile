@@ -1,33 +1,23 @@
-EXEC = grid
-DEBUG = debug
-SRC_BASENAME = allocate_grid draw_grid get_run_mode run_simulation init_world scene_update
-CU_SRC_BASENAME =  run_simulation_cuda main
-SRCS = $(addsuffix .c, $(SRC_BASENAME))
-CU_SRCS = $(addsuffix .cu, $(CU_SRC_BASENAME))
-OBJS = $(addsuffix .o, $(notdir $(SRC_BASENAME))) $(addsuffix .o, $(notdir $(CU_SRC_BASENAME)))
-LIBS = -lSDL2
-INCLUDES = SDL2
-FSANITIZE = -fsanitize=address
-#CFLAGS += -Wall -Wextra -Werror
-CC = nvcc
+# Compiler and flags
+CC = gcc
+CFLAGS = -Wall -Wextra
 
-.PHONY: clean fclean re all
+# Output executable
+TARGET = life_sim
 
-all: $(EXEC)
+# Source files
+SRCS = life_simulation.c sample_pools.c
 
-$(EXEC): $(OBJS)
-	$(CC) -I $(INCLUDES) -o $@ $^ $(LIBS)
+# Default target: compile the program
+all: $(TARGET)
 
-%.o: %.cu
-	$(CC) -I $(INCLUDES) -c $< $(LIBS)
+$(TARGET): $(SRCS)
+	$(CC) $(CFLAGS) -o $(TARGET) $(SRCS)
 
-profile:
-	~/nsight-systems-2021.2.1/bin/nsys profile ./$(EXEC)
+# Run the program
+run: $(TARGET)
+	./$(TARGET)
 
+# Clean up build artifacts
 clean:
-	rm -f $(OBJS)
-
-fclean: clean
-	rm -f $(EXEC) $(DEBUG)
-
-re: fclean all
+	rm -f $(TARGET)
