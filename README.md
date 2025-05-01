@@ -162,6 +162,99 @@ Gives the user choice for setting the starting pool. Future support for more poo
 make clean
 ```
 
+---
+## 🛠️ How to Build and Run the CUDA Implementation
+
+This section provides a step-by-step guide to setting up, building, and running the CUDA-accelerated version of Conway's Game of Life on an NVIDIA A100 GPU. 
+
+### Software Prerequisites and Dependencies
+
+Before proceeding, ensure your system meets the following requirements:
+- NVIDIA A100 GPU (Ampere architecture)
+- CUDA Toolkit: Version 11.4 or later is required for A100 GPUs.
+- NVIDIA Driver: R450 or newer is required for A100 GPUs.
+- gcc/g++: Standard C/C++ compilers for host code.
+- SDL2 Development Libraries: For visualization support (libsdl2-dev on Ubuntu).
+- Linux OS: Preferably Ubuntu 20.04+ or CentOS 8+ for best compatibility.
+
+### Install Dependencies (Ubuntu Example)
+
+```sh
+# Install NVIDIA driver and CUDA Toolkit (if not already installed)
+# Follow official NVIDIA documentation for your OS and hardware
+
+# Install build tools and SDL2
+sudo apt-get update
+sudo apt-get install -y build-essential libsdl2-dev
+```
+
+### Project Directory Structure
+
+```text
+cuda-life-benchmark/
+├── allocate_grid.c
+├── draw_grid.c
+├── get_run_mode.c
+├── run_simulation.c
+├── init_world.c
+├── scene_update.c
+├── run_simulation_cuda.cu
+├── main.cu
+├── ... (other files)
+```
+
+### Step-by-Step Build Instructions
+
+1. Clone the Repository
+
+```sh
+git clone https://github.com/Ayush-Gala/cuda-life-benchmark.git
+cd cuda-life-benchmark
+```
+
+2. Compile All Source Files
+The CUDA implementation uses both .c and .cu files. The main compiler is nvcc, which can compile both CUDA and standard C files.
+
+```sh
+# Compile all C and CUDA source files into object files
+nvcc -I SDL2 -c allocate_grid.c
+nvcc -I SDL2 -c draw_grid.c
+nvcc -I SDL2 -c get_run_mode.c
+nvcc -I SDL2 -c run_simulation.c
+nvcc -I SDL2 -c init_world.c
+nvcc -I SDL2 -c scene_update.c
+nvcc -I SDL2 -c run_simulation_cuda.cu
+nvcc -I SDL2 -c main.cu
+```
+
+3. Link Object Files into Executable
+
+```sh
+nvcc -I SDL2 -o grid allocate_grid.o draw_grid.o get_run_mode.o run_simulation.o init_world.o scene_update.o run_simulation_cuda.o main.o -lSDL2
+```
+
+4.  Run the CUDA Program
+```sh
+./grid
+```
+
+This will launch the CUDA-accelerated simulation. If SDL2 support is enabled and compiled, a visualization window may appear.
+
+5. Optional: Profiling with NVIDIA Nsight Systems
+If you wish to profile the CUDA execution:
+
+```sh
+# Replace the path with your actual Nsight Systems installation if needed
+~/nsight-systems-2021.2.1/bin/nsys profile ./grid
+```
+
+## Notes and Troubleshooting
+
+- Ensure your CUDA Toolkit and driver versions are compatible with the A100 GPU (CUDA 11.4+ and R450+ driver).
+- If you encounter missing SDL2 headers or libraries, double-check the installation (libsdl2-dev).
+- For headless servers, you may need to disable or bypass SDL2 visualization features.
+- The actual file names may differ; adjust the commands if your source files have different names or locations.
+
 ## 🚀 Future Directions
 
 - Extended Benchmark Suite: Vary grid sizes, density, and boundary conditions.
@@ -172,3 +265,6 @@ make clean
 
 This project shows that with careful parallelization and architectural tuning, cellular automata like Conway’s Game of Life can achieve orders-of-magnitude performance gains. This project serves as a robust platform for benchmarking, parallel research, and exploring advanced optimizations in scientific computing.
 
+# Contributors
+
+- Ayush Gala (agala2@ncsu.edu)
